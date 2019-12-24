@@ -37,4 +37,4 @@ app.get('/api/getCat', function(req, res) {
 });
 
 
-app.listen(port, () => console.log(`serverCat serving CatPics for CatFork ${port}!`));
+app.listen(process.env.PORT || 5000), () => console.log(`serverCat serving CatPics for CatFork ${port}!`));
