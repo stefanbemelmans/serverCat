@@ -20,7 +20,9 @@ const catHeader = {
   credentials: "include",
 };
 
-app.get('/', "Get A Cat")
+app.get('/', function(req, res){
+  res.send("Get A Cat")
+}) 
 
 app.get('/api/getCat', function(req, res) {
     axios(medCatUrl, catHeader)
