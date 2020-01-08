@@ -6,7 +6,26 @@ var cors = require("cors");
 var bodyParser = require("body-parser");
 
 app.use(cors());
+app.use(bodyParser.json())
 
+
+const db = require("./db");
+const dbName = "data";
+const collectionName = "visitors";
+
+// << db init >>
+db.initialize(dbName, collectionName, function(dbCollection) { // successCallback
+  // get all items
+  dbCollection.find().toArray(function(err, result) {
+      if (err) throw err;
+        console.log(result);
+  });
+
+  // << db CRUD routes >>
+
+}, function(err) { // failureCallback
+  throw (err);
+});
 
 // cat pic url, medium for now,
 
