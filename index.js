@@ -12,6 +12,11 @@ const db = require("./db");
 const dbName = "data";
 const collectionName = "visitors";
 
+const allVisitors = "/api/visitors";
+const visitorByNum = "/api/visitors/:num";
+const addNewVisitor = "api/visitors/add";
+const editVisitor = "api/visitors/:id";
+
 // << db init >>
 db.initialize(
   dbName,
@@ -27,7 +32,7 @@ db.initialize(
     // << db CRUD routes >>
 
     // Add One
-    app.post("api/visitors/add", (request, response) => {
+    app.post(addNewVisitor, (request, response) => {
       const item = request.body;
       dbCollection.insertOne(item, (error, result) => {
         // callback of insertOne
@@ -41,9 +46,10 @@ db.initialize(
       });
     });
 
+    
     // Get one
-    app.get("api/visitors/:id", (request, response) => {
-      const itemId = request.params.id;
+    app.get(visitorByNum, (request, response) => {
+      const itemId = request.params.num;
 
       dbCollection.findOne({ id: itemId }, (error, result) => {
         if (error) throw error;
@@ -53,16 +59,16 @@ db.initialize(
     });
 
     // Get All
-    app.get("api/visitors", (request, response) => {
+    app.get(allVisitors, (request, response) => {
       // return updated list
       dbCollection.find().toArray((error, result) => {
         if (error) throw error;
-        response.json(result);
+       response.json(result);
       });
     });
 
     // update one --Probably not needed for the Portfolio but is needed for catfork
-    app.put("api/visitors/:id", (request, response) => {
+    app.put(editVisitor, (request, response) => {
       const itemId = request.params.id;
       const item = request.body;
       console.log("Editing item: ", itemId, " to be ", item);
@@ -91,10 +97,11 @@ db.initialize(
 
 const medCatUrl = "https://api.thecatapi.com/v1/images/search?size=med";
 
-const catApi = "23e061a5-c2d3-480e-8105-2fd0fb96a6aa";
+const catApiKey = "23e061a5-c2d3-480e-8105-2fd0fb96a6aa";
 
+const catPicUrl = "/api/getCat";
 const catHeader = {
-  "x-api-key": catApi,
+  "x-api-key": catApiKey,
   credentials: "include"
 };
 
@@ -102,7 +109,7 @@ app.get("/", function(req, res) {
   res.send("Get A Cat");
 });
 
-app.get("/api/getCat", function(req, res) {
+app.get(catPicUrl, function(req, res) {
   axios(medCatUrl, catHeader)
     .then(response => {
       console.log(response.data[0].url, "response, new url");
