@@ -7,6 +7,7 @@ var bodyParser = require("body-parser");
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./db");
 const dbName = "data";
@@ -14,8 +15,9 @@ const collectionName = "visitors";
 
 const allVisitors = "/api/visitors";
 const visitorByNum = "/api/visitors/:num";
-const addNewVisitor = "api/visitors/add";
-const editVisitor = "api/visitors/:id";
+const addNewVisitor = "/api/visitors/add";
+const editVisitor = "/api/visitors/:num";
+const deleteVisitor = "/api/visitors/delete/:num"
 
 // << db init >>
 db.initialize(
@@ -34,6 +36,7 @@ db.initialize(
     // Add One
     app.post(addNewVisitor, (request, response) => {
       const item = request.body;
+      console.log(item)
       dbCollection.insertOne(item, (error, result) => {
         // callback of insertOne
         if (error) throw error;
@@ -49,9 +52,9 @@ db.initialize(
     
     // Get one
     app.get(visitorByNum, (request, response) => {
-      const itemId = request.params.num;
+      const itemNum = request.params.num;
 
-      dbCollection.findOne({ id: itemId }, (error, result) => {
+      dbCollection.findOne({ num: itemNum }, (error, result) => {
         if (error) throw error;
         // return item
         response.json(result);
