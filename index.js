@@ -48,13 +48,17 @@ const headers = {
   "x-rapidapi-Key": process.env.SpoonacularApiKey
 }
 const recipeSearchBaseUrl = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=5&ranking=1&ignorePantry=false&ingredients=";
-const recipeSearch = "/api/recipeSearch/:ingredients";
+const getRecipeDetailsBaseUrl = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/"
+const getRecipeDetailsEndUrl = "/information";
+const recipeSearchEndpoint = "/api/recipeSearch/"
+const recipeDetailEndpont = "/api/recipeDetail/"
 const separator = "%252C";
 
-app.get("/api/recipeSearch/", function (req, res) {
-  var spoonacularRequest = axios.create({
-    headers: headers
-  })
+var spoonacularRequest = axios.create({
+  headers: headers
+});
+
+app.get(recipeSearchEndpoint, function (req, res) {
 
   var ingredients = JSON.parse(req.query.ingredients);
   console.log(ingredients);
@@ -78,6 +82,24 @@ app.get("/api/recipeSearch/", function (req, res) {
 })
 
 
+app.get(recipeDetailEndpont, function (req, res) {
+
+  var id = JSON.parse(req.query.id);
+  // Get the search string from the factory
+  console.log(id, "or where is the id")
+  var RecipeDetailsSearchString = getRecipeDetailsUrlFactory(id);
+  console.log(RecipeDetailsSearchString, "SearchSTring");
+  // Get the details
+  spoonacularRequest(RecipeDetailsSearchString)
+  .then(response => {
+    console.log(response.data, "response, new url");
+    res.send(response.data);
+    })
+    .catch(function (error) {
+      console.log(error, error);
+      res.send("error:" + error);
+    });
+  })
 
 
 const recipeSearchUrlFactory = (ingredientString) => recipeSearchBaseUrl + ingredientString;
@@ -85,7 +107,5 @@ const getRecipeDetailsUrlFactory = (recipeId) => getRecipeDetailsBaseUrl + recip
 
 
 
-app.listen(process.env.PORT || 5000),
-  () => {
-    return console.log(`serverCat serving CatPics for CatFork ${port}!`);
-  };
+app.listen(process.env.PORT || 5000), console.log("hello ServerCat is listening on " + port);
+
