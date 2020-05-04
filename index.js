@@ -32,14 +32,14 @@ app.get("/", function (req, res) {
 
 app.get(catPicUrl, function (req, res) {
   axios(medCatUrl, catHeader)
-    .then(response => {
-      console.log(response.data[0].url, "response, new url");
-      res.send(response.data[0].url);
-    })
-    .catch(function (error) {
-      console.log(error, error);
-      res.send("error:" + error);
-    });
+  .then(response => {
+    console.log(response.data[0].url, "response, new url");
+    res.send(response.data[0].url);
+  })
+  .catch(function (error) {
+    console.log(error, error);
+    res.send("error:" + error);
+  });
 });
 
 const headers = {
@@ -47,38 +47,50 @@ const headers = {
   "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com",
   "x-rapidapi-Key": process.env.SpoonacularApiKey
 }
-const recipeSearchBaseUrl = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=5&ranking=1&ignorePantry=false&ingredients=";
+const recipeSearchBaseUrl = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=";
+const recipeSearchMidUrl =  "&ranking=1&ignorePantry=false&ingredients=";
+
 const getRecipeDetailsBaseUrl = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/"
 const getRecipeDetailsEndUrl = "/information";
 const recipeSearchEndpoint = "/api/recipeSearch/"
 const recipeDetailEndpont = "/api/recipeDetail/"
 const separator = "%252C";
+var numOfRecipes = 10;
 
 var spoonacularRequest = axios.create({
   headers: headers
 });
 
 app.get(recipeSearchEndpoint, function (req, res) {
+  console.log("hello Server");
+  // var Testingredients = JSON.parse(req.query.ingredients);
+  var ingredients = req.query.ingredients;
+  var numberOfRecipes = req.query.numOfRecipes;
+  console.log(ingredients, numberOfRecipes, "ingredients from query");
+  // var parsedIngs = JSON.parse(ingredients);
+  // console.log(parsedIngs);
 
-  var ingredients = JSON.parse(req.query.ingredients);
-  console.log(ingredients);
-  var cleanedIngredientString = ingredients
+  var cleanedIngredientArray = ingredients
     .split(",")
-    .map(x => x.trim());
-  console.log(cleanedIngredientString);
+    .map(x => String(x.trim()));
+  console.log(cleanedIngredientArray, "ingredient array after cleaning, should be an array of strings");
 
-  const ingredientQueryString = cleanedIngredientString.join(separator);
+  const ingredientQueryString = cleanedIngredientArray.join(separator);
   console.log(ingredientQueryString);
-  var spoonUrl = recipeSearchUrlFactory(ingredientQueryString);
-  spoonacularRequest(spoonUrl)
+  var spoonUrl = recipeSearchUrlFactory(ingredientQueryString, numberOfRecipes);
+  var alternateSpoonUrl = recipeSearchUrlFactory(ingredients, numberOfRecipes);
+  console.log(alternateSpoonUrl, "alternate");
+  console.log(spoonUrl, "spoonacular search URL, in server")
+  spoonacularRequest(alternateSpoonUrl)
     .then(response => {
-      console.log(response, "response, new url");
+      console.log(response.data, "response data");
       res.send(response.data);
     })
     .catch(function (error) {
       console.log(error, error);
       res.send("error:" + error);
     });
+  // res.send("helloback");
 })
 
 
@@ -102,7 +114,7 @@ app.get(recipeDetailEndpont, function (req, res) {
   })
 
 
-const recipeSearchUrlFactory = (ingredientString) => recipeSearchBaseUrl + ingredientString;
+const recipeSearchUrlFactory = (ingredientString, numOfRecipes) => recipeSearchBaseUrl + numOfRecipes + recipeSearchMidUrl + ingredientString;
 const getRecipeDetailsUrlFactory = (recipeId) => getRecipeDetailsBaseUrl + recipeId + getRecipeDetailsEndUrl;
 
 
