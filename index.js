@@ -88,7 +88,7 @@ app.get(recipeSearchEndpoint, function (req, res) {
     })
     .catch(function (error) {
       console.log(error, error);
-      res.send("error:" + error + headers);
+      res.send("error:" + error + headers["x-rapidapi-Key"]);
     });
   // res.send("helloback");
 })
