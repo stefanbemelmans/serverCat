@@ -65,7 +65,7 @@ app.get(recipeSearchEndpoint, function (req, res) {
   console.log("hello Server");
   // var Testingredients = JSON.parse(req.query.ingredients);
   var ingredients = req.query.ingredients;
-  var numberOfRecipes = req.query.numOfRecipes;
+  var numberOfRecipes = req.query.numOfRecipes || 10;
   console.log(ingredients, numberOfRecipes, "ingredients from query");
   // var parsedIngs = JSON.parse(ingredients);
   // console.log(parsedIngs);
